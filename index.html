@@ -2,43 +2,43 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>校園鳥類觀察 AR 系統 - 穩定增強版</title>
+    <title>校園鳥類觀察 AR 系統</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-      .ui-panel { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 85%; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 20px; text-align: center; z-index: 1000; font-family: sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-      #clue-text { margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #333; }
-      button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 10px; }
+      .ui-panel { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 85%; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 20px; text-align: center; z-index: 1000; font-family: "Microsoft JhengHei", sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+      #clue-text { margin-bottom: 15px; font-size: 18px; font-weight: bold; color: #333; line-height: 1.4; }
+      button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 10px; transition: 0.3s; }
+      button:active { background: #388E3C; }
     </style>
   </head>
 
   <body style="margin: 0; overflow: hidden;">
     <div class="ui-panel">
-      <div id="clue-text">請將相機對準標記，準備開始觀察</div>
+      <div id="clue-text">請將相機對準 Hiro Marker 標記<br>準備好開始觀察了嗎？</div>
       <button id="next-btn" onclick="nextStep()">獲得線索 1：身體</button>
     </div>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
-      
       <a-marker preset="hiro" 
                 smooth="true" 
-                smoothCount="30" 
-                smoothTolerance="0.005" 
-                smoothThreshold="2">
+                smoothCount="20" 
+                smoothTolerance="0.01" 
+                smoothThreshold="5">
         
         <a-image id="body" position="0 0 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
                  src="https://raw.githubusercontent.com/AglaeH/bird-ar-study/main/assets/sparrow/sparrow_body.png"></a-image>
         
-        <a-image id="wing" position="0 0.05 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
+        <a-image id="wing" position="0 0.005 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
                  src="https://raw.githubusercontent.com/AglaeH/bird-ar-study/main/assets/sparrow/sparrow_wing.png"></a-image>
         
-        <a-image id="head" position="0 0.10 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
+        <a-image id="head" position="0 0.010 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
                  src="https://raw.githubusercontent.com/AglaeH/bird-ar-study/main/assets/sparrow/sparrow_head.png"></a-image>
         
-        <a-image id="beak" position="0 0.15 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
+        <a-image id="beak" position="0 0.015 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
                  src="https://raw.githubusercontent.com/AglaeH/bird-ar-study/main/assets/sparrow/sparrow_beak.png"></a-image>
         
-        <a-image id="feet" position="0 0.20 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
+        <a-image id="feet" position="0 0.020 0" rotation="-90 0 0" width="2" height="1.12" visible="false" 
                  src="https://raw.githubusercontent.com/AglaeH/bird-ar-study/main/assets/sparrow/sparrow_feet.png"></a-image>
       </a-marker>
       
@@ -52,18 +52,22 @@
         { id: 'wing', clue: '線索 2：翅膀上有細小的黑白斑點。', btn: '選對了！下一關：頭部' },
         { id: 'head', clue: '線索 3：臉頰上有明顯的圓形大黑斑。', btn: '選對了！下一關：嘴巴' },
         { id: 'beak', clue: '線索 4：黑色的嘴喙呈現厚實的圓錐狀。', btn: '選對了！最後一關：腳' },
-        { id: 'feet', clue: '線索 5：它的腳是淡肉色的。', btn: '完成觀察' }
+        { id: 'feet', clue: '線索 5：它的腳是淡肉色的。', btn: '完成麻雀觀察' }
       ];
 
       function nextStep() {
+        const clueEl = document.getElementById('clue-text');
+        const btnEl = document.getElementById('next-btn');
+
         if (currentStep < steps.length) {
-          document.getElementById(steps[currentStep].id).setAttribute('visible', 'true');
-          document.getElementById('clue-text').innerText = steps[currentStep].clue;
-          document.getElementById('next-btn').innerText = steps[currentStep].btn;
+          const item = steps[currentStep];
+          document.getElementById(item.id).setAttribute('visible', 'true');
+          clueEl.innerText = item.clue;
+          btnEl.innerText = item.btn;
           currentStep++;
         } else {
-          document.getElementById('clue-text').innerHTML = "<span style='color: #E91E63;'>恭喜！您已成功完成麻雀組裝。</span>";
-          document.getElementById('next-btn').style.display = 'none';
+          clueEl.innerHTML = "<span style='color: #E91E63;'>恭喜！您已成功透過科學觀察完成麻雀組裝。</span>";
+          btnEl.style.display = 'none';
         }
       }
     </script>
